@@ -1,0 +1,134 @@
+
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+#| 
+install.packages("opendatatoronto")
+install.packages("janitor")
+install.packages("tidyverse")
+install.packages("dplyr")
+
+library(opendatatoronto)
+library(janitor)
+library(tidyverse)
+library(dplyr)
+
+#Acquire the data resource from opendatatoronto
+covid_19_bundle <- 
+  search_packages("COVID-19 Cases in Toronto")
+
+covid_19_files <- 
+  covid_19_bundle |>
+  list_package_resources()
+
+raw_covid_data <- 
+  covid_19_files[2,] |>
+  get_resource()
+
+cleaned_covid_data <-
+  clean_names(raw_covid_data)
+
+final_covid_data <- 
+  cleaned_covid_data |> 
+  select(reported_date, age_group, client_gender)
+
+#Further clean the reported_date into a specific year 
+final_covid_data <-
+  final_covid_data |>
+  separate(
+    col = reported_date,
+    into = c("year", "other"),
+    sep = "-"
+  ) |>
+  select(-other)
+
+#Show the number of cases in each year
+final_covid_data |>
+  count(year)
+
+#Clean the names of the unique variables in the age_group column
+final_covid_data$age_group|>
+  unique()
+
+final_covid_data <-
+  final_covid_data|>
+  mutate(
+    age_group =
+      case_match(
+        age_group,
+        "19 and younger" ~ "<=19",
+        "20 to 29 Years" ~ "20-29",
+        "30 to 39 Years" ~ "30-39",
+        "40 to 49 Years" ~ "40-49",
+        "50 to 59 Years" ~ "50-59",
+        "60 to 69 Years" ~ "60-69",
+        "70 to 79 Years" ~ "70-79",
+        "80 to 89 Years" ~ "80-89",
+        "90 and older" ~ "90>="
+      )
+  )
+
+#Clean the names of the unique variables in the source_of_infection column
+final_covid_data$client_gender|>
+  unique()
+
+final_covid_data |>
+  count(client_gender)
+
+final_covid_data <-
+  final_covid_data|>
+  mutate(
+    client_gender =
+      case_match(
+        client_gender,
+        "FEMALE" ~ "Female",
+        "MALE" ~ "Male",
+        "UNKNOWN" ~ "Unknown",
+        "NON-BINARY" ~ "Non-binary",
+        "OTHER" ~ "Other",
+        "TRANSGENDER" ~ "Transgender",
+        "TRANS WOMAN" ~ "Trans-woman",
+        "TRANS MAN" ~ "Trans-man",
+        "NOT LISTED, PLEASE SPECIFY" ~ "Unspecified"
+      )
+  )
+
+```
+
+```{r}
+#| label: case-reported
+#| fig-cap: COVID-19 Cases Reported in Toronto from 2020-2024
+#| echo: false
+
+final_covid_data |>
+  ggplot(aes(x = year)) +
+  geom_bar() +
+  theme_minimal() + # Make the theme neater
+  labs(x = "Year", y = "Number of reports") 
+
+```
+
+```{r}
+#| label: fig-group
+#| fig-cap: Age Group and Gender Identity of all COVID-19 cases in Toronto
+#| fig-subcap: ["Age Group","Gender Identity"]
+#| layout-ncol: 2
+#| echo: false
+#| warning: false
+#| message: false
+
+final_covid_data |>
+  ggplot(aes(x = age_group)) +
+  geom_histogram(stat = "count")+
+  theme_minimal() + # Make the theme neater
+  labs(x = "Age Group", y = "Number of COVID-19 cases") 
+
+final_covid_data |>
+  ggplot(aes(x = client_gender)) +
+  geom_histogram(stat = "count")+
+  theme_minimal() + # Make the theme neater
+  labs(x = "Gender", y = "Number of COVID-19 cases") +
+  theme(axis.title.x = element_text(size=6))
+
+```

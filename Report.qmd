@@ -1,0 +1,176 @@
+---
+title: "Analysis of COVID-19 Cases in Toronto from 2020-2024"
+subtitle: "Categorical Variable Analysis "
+author: 
+  - Quang Mai
+thanks: "Code and data are available at: https://www.toronto.ca/city-government/data-research-maps/open-data/."
+date: today
+date-format: long
+abstract: "The report will analyze one of the datasets from the 'COVID-19 Cases in Toronto' package that is avaliable for the public from Toronto Open Data. Statistically, to gain an understanding of the healthcare landscape during the COVID-19 pandemic, we visualize the dataset's catagorical data using bar charts In summary, COVID-19 cases have reached its peak from 2020-2022 but is currently subsiding. Furthermore, those who are most likely to be afflicted with COVID-19 are women 20 to 30 years of age."
+format: pdf
+number-sections: true
+bibliography: references.bib
+---
+
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+#| 
+install.packages("opendatatoronto")
+install.packages("janitor")
+install.packages("tidyverse")
+install.packages("dplyr")
+
+library(opendatatoronto)
+library(janitor)
+library(tidyverse)
+library(dplyr)
+
+#Acquire the data resource from opendatatoronto
+covid_19_bundle <- 
+  search_packages("COVID-19 Cases in Toronto")
+
+covid_19_files <- 
+  covid_19_bundle |>
+  list_package_resources()
+
+raw_covid_data <- 
+  covid_19_files[2,] |>
+  get_resource()
+
+cleaned_covid_data <-
+  clean_names(raw_covid_data)
+
+final_covid_data <- 
+  cleaned_covid_data |> 
+  select(reported_date, age_group, client_gender)
+
+#Further clean the reported_date into a specific year 
+final_covid_data <-
+  final_covid_data |>
+  separate(
+    col = reported_date,
+    into = c("year", "other"),
+    sep = "-"
+  ) |>
+  select(-other)
+
+#Show the number of cases in each year
+final_covid_data |>
+  count(year)
+
+#Clean the names of the unique variables in the age_group column
+final_covid_data$age_group|>
+  unique()
+
+final_covid_data <-
+  final_covid_data|>
+  mutate(
+    age_group =
+      case_match(
+        age_group,
+        "19 and younger" ~ "<=19",
+        "20 to 29 Years" ~ "20-29",
+        "30 to 39 Years" ~ "30-39",
+        "40 to 49 Years" ~ "40-49",
+        "50 to 59 Years" ~ "50-59",
+        "60 to 69 Years" ~ "60-69",
+        "70 to 79 Years" ~ "70-79",
+        "80 to 89 Years" ~ "80-89",
+        "90 and older" ~ "90>="
+      )
+  )
+
+#Clean the names of the unique variables in the source_of_infection column
+final_covid_data$client_gender|>
+  unique()
+
+final_covid_data |>
+  count(client_gender)
+
+final_covid_data <-
+  final_covid_data|>
+  mutate(
+    client_gender =
+      case_match(
+        client_gender,
+        "FEMALE" ~ "Female",
+        "MALE" ~ "Male",
+        "UNKNOWN" ~ "Unknown",
+        "NON-BINARY" ~ "Non-binary",
+        "OTHER" ~ "Other",
+        "TRANSGENDER" ~ "Transgender",
+        "TRANS WOMAN" ~ "Trans-woman",
+        "TRANS MAN" ~ "Trans-man",
+        "NOT LISTED, PLEASE SPECIFY" ~ "Unspecified"
+      )
+  )
+
+```
+
+# Introduction
+
+The comprehensive data on COVID-19 cases in Toronto enables us to oversee the demographics and social groups who were most afflicted by the pandemic. For analytical purposes, the dataset was selected from a package of datasets, namely 'COVID-19 Cases in Toronto' from @opendatatoronto.  In specifics, through analyzing the dataset with a critical lens, this report comes up with COVID-19 case trends and aims to substantiate why these trends carried out in the first place. With the aid of the programming language R, this report tackles how COVID-19 cases progress from 2020 to 2023 and how age group and gender identity factored into this progression. 
+
+# Data {#sec-data}
+
+This chosen dataset from the package has has 15 variables in total, though this report will only engage with its 'reported_date, age_group and client_gender' variables, or respectively the year, age group and gender identity variables, to analyze COVID-19 case trends that have carried out in Toronto from 2020-2024.
+
+```{r}
+#| label: case-reported
+#| fig-cap: COVID-19 Cases Reported in Toronto from 2020-2024
+#| echo: false
+
+final_covid_data |>
+  ggplot(aes(x = year)) +
+  geom_bar() +
+  theme_minimal() + # Make the theme neater
+  labs(x = "Year", y = "Number of reports") 
+
+```
+
+The bar chart helps visualize the tallies of all reported COVID-19 cases for each year from 2020 to 2024 (@case-reported). Generally, reported cases start increasing from 2020 and reached its peak in 2021 to 2022. However, from 2022 onwards, all reported COVID-19 cases seem to decrease. Still, there still seems to be a few COVID-19 cases in late 2023 and early 2024, which most probably coincides with North America's flu season.
+
+```{r}
+#| label: age-gender
+#| fig-cap: Age Group and Gender Identity of all COVID-19 cases in Toronto
+#| fig-subcap: ["Age Group","Gender Identity"]
+#| layout-ncol: 2
+#| echo: false
+#| warning: false
+#| message: false
+
+final_covid_data |>
+  ggplot(aes(x = age_group)) +
+  geom_histogram(stat = "count")+
+  theme_minimal() + # Make the theme neater
+  labs(x = "Age Group", y = "Number of COVID-19 cases") 
+
+final_covid_data |>
+  ggplot(aes(x = client_gender)) +
+  geom_histogram(stat = "count")+
+  theme_minimal() + # Make the theme neater
+  labs(x = "Gender", y = "Number of COVID-19 cases") +
+  theme(axis.title.x = element_text(size=6))
+
+```
+\break
+To delve further into the COVID-19 case trends, this report also cross-references the number of reported COVID-19 cases based on people's gender identity and age group (@age-gender). Overall, those who identified as females from the age of 20 to 39 are most likely to contract COVID-19. The dataset, though, is equitable in a sense that it's conscious of multiple gender identities such as non-binary identifying people or transgender people. Yet, it's hard to say if the numbers for these social groups are accurate (they're too low), as these people are still very much ostracized socially, especially in healthcare.
+
+
+# Discussion and Conclusion
+
+Being a commercial and Toronto is one of the major cities in Canada, which is also the capital of Province Ontario. Toronto fields includes old 140 City of Toronto Neighbourhoods structure as well as the new 158 City of Toronto Neighbourhoods structure.The mental health of residents draw our attention of whether people are having healthy mental status at this big city.
+
+We downloaded the 'COVID-19 Cases in Toronto'package from the Open Data-City of Toronto website [@opendatatoronto]. We cleaned and tidied the data set using the statistical programming language R [@citeR] including the tidyverse [@tidyverse] and janitor [@janitor]. We then created three graphs in order to analyze the COVID-19 case trends from 2020-2024 and how gender identity and age group factored in these trends (@case-reported).
+
+Overall, COVID-19 cases reach their peak in 2021 and 2022 and start decreasing from there onwards. Reflecting on the these trends, from 2022, stricter governmental regulations of personal mobility, mask-wearing and the necessity vaccination proofs defintely help decrease the number of cases. As for the cross-referencing of gender identity and age group, those who are most likely to contract COVID-19 are female identifying individuals from 20 to 39 years of age. Understandably, the dominance of early to middle-aged females working in nursing, healthcare, education or disciplines that require much community building and social gathering explains why women are more likely to contract COVID-19. Moreover, the existing gender inequalities for professional women are most likely exacerbated by such healthcare crisis as COVID-19. In short, to better understand the dataset, a closer statistical analysis of the bar charts and better modelling is necessary.
+
+
+
+\newpage
+
+# References
+
+
