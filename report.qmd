@@ -6,7 +6,7 @@ author:
 thanks: "Code and data are available at: https://www.toronto.ca/city-government/data-research-maps/open-data/."
 date: today
 date-format: long
-abstract: "The report will analyze one of the datasets from the 'COVID-19 Cases in Toronto' package that is avaliable for the public from Toronto Open Data. Statistically, to gain an understanding of the healthcare landscape during the COVID-19 pandemic, we visualize the dataset's catagorical data using bar charts and R. In summary, COVID-19 cases have reached its peak from 2020-2022 but is currently subsiding. Furthermore, those who are most likely to be afflicted with COVID-19 are women 20 to 30 years of age."
+abstract: "The report will analyze one of the datasets from the 'COVID-19 Cases in Toronto' package that is avaliable for the public from Toronto Open Data. Statistically, to gain an understanding of the healthcare landscape during the COVID-19 pandemic, we visualize the dataset's catagorical data using histograms and R. In summary, COVID-19 cases have reached its peak from 2020-2022 but is currently subsiding. Furthermore, those who are most likely to be afflicted with COVID-19 are women 20 to 30 years of age."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -130,7 +130,7 @@ final_covid_data |>
 
 ```
 
-The bar chart helps visualize the tallies of all reported COVID-19 cases for each year from 2020 to 2024 (@case-reported). Generally, reported cases start increasing from 2020 and reached its peak in 2021 to 2022. However, from 2022 onwards, all reported COVID-19 cases seem to decrease. Still, there still seems to be a few COVID-19 cases in late 2023 and early 2024, which most probably coincides with North America's flu season.
+The histogram helps visualize the tallies of all reported COVID-19 cases for each year from 2020 to 2024 (@case-reported). Generally, reported cases start increasing from 2020 and reached its peak in 2021 to 2022. However, from 2022 onwards, all reported COVID-19 cases seem to decrease. Still, there still seems to be a few COVID-19 cases in late 2023 and early 2024, which most probably coincides with North America's flu season.
 
 ```{r}
 #| label: age-gender
@@ -161,7 +161,7 @@ To delve further into the COVID-19 case trends, this report also cross-reference
 
 # Discussion and Conclusion
 
-Being a commercial and Toronto is one of the major cities in Canada, which is also the capital of Province Ontario. Toronto fields includes old 140 City of Toronto Neighbourhoods structure as well as the new 158 City of Toronto Neighbourhoods structure.The mental health of residents draw our attention of whether people are having healthy mental status at this big city.
+Being a commercial centre and a major city of Canada and Ontario, Toronto thrives with its multifaceted culture. Though, being a city with diverse demographics means that Toronto is a hotspot for COVID-19 cases. This makes it neceessary to be analyzed to gain insights into COVID-19.
 
 We downloaded the 'COVID-19 Cases in Toronto'package from the Open Data-City of Toronto website [@opendatatoronto]. We cleaned and tidied the data set using the statistical programming language R [@citeR] including the tidyverse [@tidyverse] and janitor [@janitor]. We then created three graphs in order to analyze the COVID-19 case trends from 2020-2024 and how gender identity and age group factored in these trends (@case-reported).
 
