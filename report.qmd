@@ -6,7 +6,7 @@ author:
 thanks: "Code and data are available at: https://www.toronto.ca/city-government/data-research-maps/open-data/."
 date: today
 date-format: long
-abstract: "The report will analyze one of the datasets from the 'COVID-19 Cases in Toronto' package that is avaliable for the public from Toronto Open Data. Statistically, to gain an understanding of the healthcare landscape during the COVID-19 pandemic, we visualize the dataset's catagorical data using bar charts In summary, COVID-19 cases have reached its peak from 2020-2022 but is currently subsiding. Furthermore, those who are most likely to be afflicted with COVID-19 are women 20 to 30 years of age."
+abstract: "The report will analyze one of the datasets from the 'COVID-19 Cases in Toronto' package that is avaliable for the public from Toronto Open Data. Statistically, to gain an understanding of the healthcare landscape during the COVID-19 pandemic, we visualize the dataset's catagorical data using bar charts and R. In summary, COVID-19 cases have reached its peak from 2020-2022 but is currently subsiding. Furthermore, those who are most likely to be afflicted with COVID-19 are women 20 to 30 years of age."
 format: pdf
 number-sections: true
 bibliography: references.bib
